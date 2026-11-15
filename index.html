@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARS PATH | Martian Exploration System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.11.0/ol.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+       
+        <aside class="sidebar">
+            <div class="logo">MARS PATH</div>
+			
+            <p class="subtitle">INTERPLANETARY SYSTEM</p>
+			
+            <h3>MISSION CONTROL</h3>
+			
+            <nav class="menu">
+                <a href="#dashboard"> Dashboard</a>
+                <a href="#explorer"> Mars Explorer</a>
+                <a href="#routes">Route Planner</a>
+                <a href="#guide">Mars Mission Guide</a>
+            </nav>
+        </aside>
+       
+	   
+        <main class="main">
+          
+            <header class="hero">
+                <div class="hero-planet-fallback"></div>
+                <img class="hero-planet hero-planet-photo"
+                     src="https://d2pn8kiwq2w21t.cloudfront.net/original_images/jpegPIA00407.jpg"
+                     alt="Mars seen from orbit, Viking Orbiter mosaic"
+                     onerror="this.remove()">
+                
+                <div id="hero-globe" class="hero-planet hero-globe" aria-hidden="true"></div>
+                <div class="hero-fade"></div>
+
+                <div class="topbar hero-topbar">
+                    <span>NASA SPACE APPS CHALLENGE</span>
+                </div>
+
+                <div class="hero-content"> 
+                    <h1 class="hero-title">MARS PATH</h1>
+                </div>
+
+                <p class="hero-credit">Image: NASA/JPL/USGS</p>
+            </header>
+			
+			
+			
+            <section id="dashboard">
+			<div class="contenido">
+                <h1>Dashboard</h1>
+
+                
+                <div class="welcome-card">
+                    <p class="card-label">WELCOME</p>
+                    <h2>Welcome to <span class="highlight">MARS PATH</span></h2>
+                    <p>MARS PATH brings together data from NASA's Mars missions in one layered map. It helps astronauts plan safe routes, find science targets, and know what to expect before they step outside. Every layer has a purpose: to get you there, do the science, and bring you back safely.</p>
+                </div>
+
+              
+                <div class="dash-card">
+                    <p class="card-label">MARS OVERVIEW</p>
+                    <p>Mars is our neighbor in the solar system and the fourth planet from the Sun. People call it the “Red Planet” because its soil is covered in reddish dust, much like rust. It is smaller and much colder than Earth, with a thin atmosphere that we can’t breathe, so astronauts will always need a spacesuit outside. Mars still has a lot in common with our planet. It has days almost as long as ours, seasons, mountains, valleys and polar ice caps. Scientists believe that long ago it had rivers and lakes, which is why it’s one of the most exciting places to explore and the next big destination for humans.</p>
+                </div>
+
+               
+                <p class="section-label">PLANET STATISTICS</p>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <p class="stat-title">Average Temperature</p>
+                        <p class="stat-value">−63 °C</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-title">Gravity</p>
+                        <p class="stat-value">3.71 m/s²</p>
+                        <p class="stat-note">38% of Earth's, a 100 kg astronaut feels like 38 kg</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-title">Length of a Day</p>
+                        <p class="stat-value">24h 39m 35s</p>
+                        <p class="stat-note">About 40 minutes longer than an Earth day</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-title">Atmospheric Composition</p>
+                        <ul class="atmo-list">
+                            <li><span>CO₂</span><span>~95%</span></li>
+                            <li><span>Nitrogen</span><span>~2.8%</span></li>
+                            <li><span>Argon</span><span>~2%</span></li>
+                            <li><span>Oxygen</span><span>~0.17%</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                
+                <div class="dash-card mission-card">
+                    <div class="mission-header">
+                        <div>
+                            <p class="card-label">MISSION STATUS</p>
+                            <h2>MARS PATH</h2>
+                        </div>
+                        <span id="ms-badge" class="go-badge pending">● PENDING</span>
+                    </div>
+                    <table class="mission-table">
+                        <tr><td>Target site</td><td id="ms-target">Mount Sharp boxwork region, Gale Crater</td></tr>
+                        <tr><td>Science objective</td><td>Study boxwork formations: mineral ridges left by ancient groundwater</td></tr>
+                        <tr><td>Data layers loaded</td><td>Imagery · Topography · Hazard zones · Radiation</td></tr>
+                        <tr><td>Route</td><td id="ms-route"><span class="muted">No route planned yet – draw one in the Route Planner</span></td></tr>
+                        <tr><td>Route safety</td><td id="ms-safety"><span class="muted">Waiting for a route</span></td></tr>
+                        <tr><td>Radiation conditions</td><td id="ms-radiation"><span class="ok">Nominal</span>, no solar storm alerts</td></tr>
+                        <tr><td>Weather</td><td id="ms-weather"><span class="ok">Clear</span>, low dust activity</td></tr>
+                        <tr><td>EVA readiness</td><td id="ms-readiness"><span class="muted">PENDING</span> – plan a route to evaluate the EVA</td></tr>
+                    </table>
+                </div>
+
+				</div>
+            </section>
+			
+			
+            <section id="explorer">
+            <div class="contenido">
+                <h1>Mars Explorer</h1>
+                <p class="section-intro">Explore Gale Crater and Mount Sharp, the target region of the MARS PATH mission. Zoom in from the whole crater down to the EVA route, search for places, turn data layers on and off, and click anywhere to see its coordinates and description.</p>
+
+                <div class="explorer-grid">
+
+                    
+                    <div class="map-wrap">
+                        <div class="map-stage">
+                        <div id="mars-map" class="mars-map"></div>
+
+                        <div class="map-inset">
+                            <div id="mars-inset" class="mars-inset"></div>
+                            <span>Gale Crater on Mars</span>
+                        </div>
+
+                        <div class="map-toolbar">
+                            <button id="btn-region" class="map-btn" type="button">️ Whole crater</button>
+                            <button id="btn-eva" class="map-btn accent" type="button"> EVA site</button>
+                            <button id="btn-color" class="map-btn color-btn active" type="button" title="Blend Viking color data over the 5 m CTX black &amp; white image"> Mars color: ON</button>
+                        </div>
+                        </div>
+                        <div class="map-footer">
+                            <span>Cursor: <strong id="mouse-coords">—</strong></span>
+                        </div>
+                    </div>
+
+                    <aside class="explorer-panel">
+
+                        <div class="panel-block">
+                            <p class="card-label">LOCATION SEARCH</p>
+                            <div class="search-box">
+                                <input id="loc-search" type="text" placeholder="Search a place or type lat, lon" autocomplete="off">
+                                <ul id="search-results" class="search-results"></ul>
+                            </div>
+                        </div>
+
+                        <div class="panel-block">
+                            <p class="card-label">MAP LAYERS</p>
+                            <label class="layer-toggle">
+                                <input type="checkbox" data-layer="route" checked>
+                                <span class="swatch sw-route"></span> Exploration route
+                            </label>
+                            <label class="layer-toggle">
+                                <input type="checkbox" data-layer="topo">
+                                <span class="swatch sw-topo"></span> Topography &amp; elevation
+                            </label>
+                            <div id="elev-legend" class="elev-legend">
+                                <div class="elev-bar"></div>
+                                <div class="elev-labels"><span>Lower</span><span>Higher</span></div>
+                                <label class="opacity-row">Opacity
+                                    <input id="topo-opacity" type="range" min="0" max="100" value="60">
+                                </label>
+                            </div>
+                            <label class="layer-toggle">
+                                <input type="checkbox" data-layer="risk" checked>
+                                <span class="swatch sw-risk"></span> Risk zones
+                            </label>
+                            <label class="layer-toggle">
+                                <input type="checkbox" data-layer="features" checked>
+                                <span class="swatch sw-features"></span> Surface features
+                            </label>
+                            <label class="layer-toggle">
+                                <input type="checkbox" data-layer="curiosity" checked>
+                                <span class="swatch sw-curiosity"></span> Curiosity's real path
+                                <em id="curiosity-status" class="layer-status">loading…</em>
+                            </label>
+                            <label class="layer-toggle">
+                                <input type="checkbox" data-layer="grid">
+                                <span class="swatch sw-grid"></span> Coordinate grid
+                            </label>
+                        </div>
+
+                        <div class="panel-block info-block" id="location-info">
+                            <p class="card-label">LOCATION INFORMATION</p>
+                            <p class="info-desc">Click any place on the map, or search for one, to see its coordinates and description.</p>
+                        </div>
+
+                    </aside>
+                </div>
+
+                <div class="feature-legend">
+                    <p class="card-label">SURFACE FEATURES</p>
+                    <div class="legend-items">
+                        <span><i style="background:#ffb347"></i>Crater</span>
+                        <span><i style="background:#ff6b6b"></i>Mountain</span>
+                        <span><i style="background:#c5e1a5"></i>Plain</span>
+                        <span><i style="background:#ffffff"></i>Landing site</span>
+                        <span><i style="background:#4fc3f7"></i>Channel</span>
+                        <span><i style="background:#ff8fab"></i>Ridge</span>
+                        <span><i style="background:#e6c27a"></i>Dunes</span>
+                        <span><i style="background:#b39ddb"></i>Rock outcrop</span>
+                        <span><i style="background:#f06292"></i>Boxwork</span>
+                        <span><i style="background:#64d69a"></i>EVA site</span>
+                        <span><i class="risk-high"></i>High risk</span>
+                        <span><i class="risk-med"></i>Medium risk</span>
+                        <span><i class="rover"></i>Curiosity</span>
+                    </div>
+                </div>
+            </div>
+            </section>
+			
+			
+            <section id="routes">
+            <div class="contenido">
+                <h1>Route Planner</h1>
+                <p class="section-intro">Draw your own Marswalk. Press <strong>Start route</strong>, then click on the map: the first click is the starting point and every new click adds the next stop. MARS PATH checks each segment against the mapped hazards and the mission conditions, and tells you if the route is safe or not.</p>
+
+                <div class="rp-grid">
+
+                   
+                    <div class="rp-map-wrap">
+                        <div id="rp-map" class="rp-map"></div>
+                        <div class="rp-toolbar">
+                            <div class="rp-actions">
+                                <button type="button" id="rp-draw" class="rp-btn primary" title="Start drawing: click on the map to add points">
+                                    <span class="rp-btn-icon" id="rp-draw-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+                                    <span class="rp-btn-text"><strong id="rp-draw-label">Start route</strong><small id="rp-draw-sub">Click the map to add points</small></span>
+                                </button>
+                                <div class="rp-btn-group">
+                                    <button type="button" id="rp-undo" class="rp-btn ghost" disabled title="Delete the last point and its segment">
+                                        <span class="rp-btn-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></span>
+                                        <span class="rp-btn-text"><strong>Undo</strong><small>Last segment</small></span>
+                                    </button>
+                                    <button type="button" id="rp-clear" class="rp-btn ghost danger" disabled title="Delete the whole route">
+                                        <span class="rp-btn-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/><path d="M10 11v6M14 11v6"/></svg></span>
+                                        <span class="rp-btn-text"><strong>Clear</strong><small>Whole route</small></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="rp-hint-box" class="rp-hint-box">
+                                <span class="rp-rec"></span>
+                                <span id="rp-hint" class="rp-hint">Press “Start route” to begin.</span>
+                            </div>
+                        </div>
+                        <div class="rp-map-footer">
+                            <span>Cursor: <strong id="rp-cursor">—</strong></span>
+                        </div>
+                    </div>
+
+                   
+                    <aside class="rp-panel">
+                        <div class="panel-block">
+                            <div class="rp-points-head">
+                                <p class="card-label">ROUTE POINTS</p>
+                                <span id="rp-points-count" class="rp-count">0</span>
+                            </div>
+                            <div id="rp-points-total" class="rp-points-total"></div>
+                            <ol id="rp-points" class="rp-points"></ol>
+                        </div>
+
+                        <div class="panel-block">
+                            <p class="card-label">MISSION CONDITIONS</p>
+                            <label class="layer-toggle">
+                                <input type="checkbox" id="rp-cond-sep">
+                                <span class="swatch sw-sep"></span> Solar storm alert
+                            </label>
+                            <label class="layer-toggle">
+                                <input type="checkbox" id="rp-cond-dust">
+                                <span class="swatch sw-dust"></span> Dust storm in the area
+                            </label>
+                            <label class="rp-range">EVA time limit <strong id="rp-eva-val">8 h</strong>
+                                <input id="rp-eva" type="range" min="1" max="24" step="1" value="8">
+                                <span class="rp-range-scale"><span>1 h</span><span>12 h</span><span>24 h</span></span>
+                            </label>
+                        </div>
+
+                        <div class="panel-block">
+                            <p class="card-label">MAP LAYERS</p>
+                            <label class="layer-toggle"><input type="checkbox" id="rp-lyr-color" checked><span class="swatch sw-color"></span> Mars color</label>
+                            <label class="layer-toggle"><input type="checkbox" id="rp-lyr-hazards" checked><span class="swatch sw-risk"></span> Hazard zones</label>
+                            <label class="layer-toggle"><input type="checkbox" id="rp-lyr-sites" checked><span class="swatch sw-features"></span> Sites from Mars Explorer</label>
+                            <label class="layer-toggle"><input type="checkbox" id="rp-lyr-topo"><span class="swatch sw-topo"></span> Topography & elevation</label>
+                            <div id="rp-elev-legend" class="elev-legend">
+                                <div class="elev-bar"></div>
+                                <div class="elev-labels"><span>Lower</span><span>Higher</span></div>
+                                <label class="opacity-row">Opacity
+                                    <input id="rp-topo-opacity" type="range" min="0" max="100" value="55">
+                                </label>
+                            </div>
+                            <label class="layer-toggle"><input type="checkbox" id="rp-lyr-grid"><span class="swatch sw-grid"></span> Coordinate grid</label>
+                        </div>
+                    </aside>
+                </div>
+
+                
+                <div class="dash-card rp-card">
+                    <div class="mission-header">
+                        <div>
+                            <p class="card-label">ROUTE SUMMARY</p>
+                            <h2 id="rp-title">No route yet</h2>
+                        </div>
+                        <span id="rp-verdict" class="rp-badge">NO ROUTE</span>
+                    </div>
+                    <div id="rp-summary"><p class="info-desc">Draw at least one segment to see the analysis.</p></div>
+                </div>
+
+                <div class="rp-two">
+                    <div class="dash-card rp-card">
+                        <p class="card-label">CONDITIONS CHECK</p>
+                        <ul id="rp-conditions" class="rp-hazards"><li class="info-desc">—</li></ul>
+                    </div>
+                    <div class="dash-card rp-card">
+                        <p class="card-label">SEGMENTS</p>
+                        <div id="rp-segments"><p class="info-desc">—</p></div>
+                    </div>
+                </div>
+
+            </div>
+            </section>
+			
+			
+            <section id="guide">
+                <h1>Mars Mission Guide</h1>
+                <p class="section-intro">Background for the mission: the rover that opened the way, the mountain it is climbing, and why its route matters for the first human Marswalk.</p>
+
+                <div class="mg-grid">
+                    <article class="dash-card mg-card">
+                        <div class="mg-head">
+                            <span class="mg-num">01</span>
+                            <div>
+                                <p class="card-label">THE EXPLORER</p>
+                                <h2>Curiosity Rover</h2>
+                            </div>
+                        </div>
+                        <p>NASA's Curiosity rover is a car-sized robotic laboratory exploring lower Mount Sharp on Mars. Scientists use it to drive to different regions of the mountain, photograph the terrain and study its rocks and soil up close.</p>
+                        <ul class="mg-facts">
+                            <li><span>Landed</span><strong>August 2012</strong></li>
+                            <li><span>Landing site</span><strong>Bradbury Landing, Gale Crater</strong></li>
+                            <li><span>Mission</span><strong>Mars Science Laboratory</strong></li>
+                        </ul>
+                    </article>
+
+                    <article class="dash-card mg-card">
+                        <div class="mg-head">
+                            <span class="mg-num">02</span>
+                            <div>
+                                <p class="card-label">THE TARGET</p>
+                                <h2>Mount Sharp</h2>
+                            </div>
+                        </div>
+                        <p>Mount Sharp is a mountain about 5 km tall in the middle of Gale Crater. It is made of stacked rock layers: the lowest layers are the oldest, so climbing the mountain is like reading Mars' history page by page. NASA's map shows a proposed route for Curiosity up the lower part of the mountain, through the regions scientists want to explore in the coming years.</p>
+                        <ul class="mg-facts">
+                            <li><span>Height</span><strong>About 5 km</strong></li>
+                            <li><span>Location</span><strong>Center of Gale Crater</strong></li>
+                            <li><span>Key feature</span><strong>Layered rocks, oldest at the bottom</strong></li>
+                        </ul>
+                    </article>
+
+                    <article class="dash-card mg-card">
+                        <div class="mg-head">
+                            <span class="mg-num">03</span>
+                            <div>
+                                <p class="card-label">WHY IT MATTERS</p>
+                                <h2>Scientific Importance</h2>
+                            </div>
+                        </div>
+                        <p>The proposed route helps scientists choose which areas of Mount Sharp to explore. Each layer can show whether Mars once had water and conditions that could support life. The map combines information from several instruments and spacecraft, so the team knows what to expect before the rover gets there.</p>
+                    </article>
+
+                    <article class="dash-card mg-card">
+                        <div class="mg-head">
+                            <span class="mg-num">04</span>
+                            <div>
+                                <p class="card-label">THE PLAN</p>
+                                <h2>Proposed Exploration Route</h2>
+                            </div>
+                        </div>
+                        <p>NASA's map is a visual guide to Curiosity's proposed path up Mount Sharp. It marks the route already driven, the stops the rover investigated, and the regions scientists plan to explore next. Orbital images from the Mars Reconnaissance Orbiter are the base of the map.</p>
+                    </article>
+                </div>
+
+                <div class="dash-card mg-link">
+                    <p class="card-label">HOW THIS CONNECTS TO MARS PATH</p>
+                    <p>Curiosity has spent years mapping this region, which makes it one of the best-known places on Mars. MARS PATH uses that knowledge, together with NASA's maps and data, to help a future astronaut plan a safe walk with high scientific value in the same area.</p>
+                </div>
+            </section>
+			
+			
+        </main>
+    </div>
+
+
+    <script>
+    (function () {
+        'use strict';
+        const hero = document.querySelector('.hero');
+        const globe = document.getElementById('hero-globe');
+        const photo = document.querySelector('.hero-planet-photo');
+        if (!hero || !globe) return;
+
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const SECONDS_PER_TURN = 120;   // one full rotation of Mars (lower = faster)
+
+        // NASA Mars Trek: Viking color global mosaic, zoom level 3 = 16 x 8 tiles
+        const TILE = 'https://trek.nasa.gov/tiles/Mars/EQ/Mars_Viking_MDIM21_ClrMosaic_global_232m/1.0.0/default/default028mm/3/{y}/{x}.jpg';
+        const COLS = 16, ROWS = 8;
+
+        // Two copies of the world map side by side, so the loop is seamless
+        const strip = document.createElement('div');
+        strip.className = 'globe-strip';
+        let loaded = 0, failed = 0, ready = false, gaveUp = false;
+        const total = COLS * ROWS;
+
+        for (let copy = 0; copy < 2; copy++) {
+            const grid = document.createElement('div');
+            grid.className = 'globe-grid';
+            for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    const img = document.createElement('img');
+                    img.alt = '';
+                    img.decoding = 'async';
+                    if (copy === 0) {
+                        img.onload = () => { loaded++; if (!ready && loaded >= total * 0.9) showGlobe(); };
+                        img.onerror = () => { failed++; if (failed > 8 && !ready) useBackup(); };
+                    }
+                    img.src = TILE.replace('{x}', x).replace('{y}', y);
+                    grid.appendChild(img);
+                }
+            }
+            strip.appendChild(grid);
+        }
+        globe.appendChild(strip);
+
+        // Size of the map so the visible top of the globe shows the equator region
+        let texW = 0;
+        function sizeTexture() {
+            const texH = globe.clientHeight * 1.6;
+            texW = texH * 2;                       // world map is 2:1
+            globe.style.setProperty('--tex-w', texW + 'px');
+            globe.style.setProperty('--tex-h', texH + 'px');
+        }
+        sizeTexture();
+        window.addEventListener('resize', sizeTexture);
+
+        function showGlobe() {
+            ready = true;
+            hero.classList.add('globe-ready');
+            if (reduceMotion) return;
+            let offset = 0, last = performance.now();
+            function frame(now) {
+                const dt = (now - last) / 1000;
+                last = now;
+                offset = (offset + dt * texW / SECONDS_PER_TURN) % texW;
+                strip.style.transform = 'translateX(' + (-offset) + 'px)';
+                requestAnimationFrame(frame);
+            }
+            requestAnimationFrame(frame);
+        }
+
+        // Backup: if the map tiles can't load, slowly turn the NASA photo
+        function useBackup() {
+            if (gaveUp) return;
+            gaveUp = true;
+            hero.classList.add('globe-failed');
+            if (reduceMotion) return;
+            const target = document.querySelector('.hero-planet-photo') || document.querySelector('.hero-planet-fallback');
+            let angle = 0, last = performance.now();
+            function frame(now) {
+                angle = (angle + (now - last) / 1000 * 360 / 240) % 360;   // one turn every 4 minutes
+                last = now;
+                target.style.transform = 'translateX(-50%) rotate(' + angle + 'deg)';
+                requestAnimationFrame(frame);
+            }
+            requestAnimationFrame(frame);
+        }
+
+        // If nothing arrives in 15 s, use the backup
+        setTimeout(() => { if (!ready) useBackup(); }, 15000);
+    })();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/ol@10.11.0/dist/ol.js"></script>
+    <script>
+/* =========================================================
+   MARS PATH – Mars Explorer (Gale Crater / Mount Sharp)
+   Interactive local map built with OpenLayers.
+   Imagery: NASA Mars Trek WMTS
+     - CTX global mosaic, 5 m/pixel (Mars Reconnaissance Orbiter)
+     - MOLA colorized shaded relief (Mars Global Surveyor)
+   Live data: Curiosity traverse from NASA's MMGIS service (if available)
+   ========================================================= */
+(function () {
+    'use strict';
+
+    const MARS_RADIUS_KM = 3389.5;
+    const TREK_BASE = 'https://trek.nasa.gov/tiles/Mars/EQ/';
+
+    // Area of interest: Gale Crater (center 5.4°S, 137.8°E, ~154 km wide)
+    const REGION_EXTENT = [136.3, -6.9, 139.3, -3.9];   // [minLon, minLat, maxLon, maxLat]
+    const REGION_CENTER = [137.6, -5.0];
+    const REGION_ZOOM = 7.6;
+
+    /* ---------------------------------------------------------
+       1. DATA
+       Coordinates: planetocentric latitude, east longitude.
+       approx: true  -> position is approximate (check in Mars Trek)
+       --------------------------------------------------------- */
+
+    const TYPE_COLORS = {
+        'Crater':        '#ffb347',
+        'Mountain':      '#ff6b6b',
+        'Plain':         '#c5e1a5',
+        'Landing site':  '#ffffff',
+        'Channel':       '#4fc3f7',
+        'Ridge':         '#ff8fab',
+        'Dunes':         '#e6c27a',
+        'Rock outcrop':  '#b39ddb',
+        'Boxwork':       '#f06292',
+        'EVA site':      '#64d69a'
+    };
+
+    const SURFACE_FEATURES = [
+        { name: 'Gale Crater', type: 'Crater', lat: -5.4, lon: 137.8, zoom: 7.6, approx: false,
+          desc: 'A 154 km wide impact crater, about the size of Connecticut and Rhode Island together. Billions of years ago it held a lake. NASA\'s Curiosity rover has explored it since 2012.' },
+        { name: 'Mount Sharp (Aeolis Mons)', type: 'Mountain', lat: -5.08, lon: 137.85, zoom: 9, approx: true,
+          desc: 'A mountain about 5 km tall in the middle of Gale Crater. It is made of rock layers, and each layer formed in a different era of Mars\' ancient climate, from wet to dry.' },
+        { name: 'Aeolis Palus', type: 'Plain', lat: -4.50, lon: 137.40, zoom: 10, approx: true,
+          desc: 'The flat crater floor between the northern rim of Gale and Mount Sharp. Curiosity landed on these plains.' },
+        { name: 'Bradbury Landing', type: 'Landing site', lat: -4.5895, lon: 137.4417, zoom: 13, approx: false,
+          desc: 'The spot where Curiosity touched down on August 6, 2012. It was named after the science-fiction author Ray Bradbury.' },
+        { name: 'Yellowknife Bay', type: 'Rock outcrop', lat: -4.59, lon: 137.457, zoom: 13, approx: true,
+          desc: 'One of Curiosity\'s first stops. Here it found rocks showing that Gale once had a lake with water that could have supported microbial life.' },
+        { name: 'Peace Vallis', type: 'Channel', lat: -4.45, lon: 137.40, zoom: 11, approx: true,
+          desc: 'An ancient stream channel that flows down from the crater rim and spreads into a fan of sediments on the plains.' },
+        { name: 'Pahrump Hills', type: 'Rock outcrop', lat: -4.664, lon: 137.371, zoom: 13, approx: true,
+          desc: 'The outcrop at the base of Mount Sharp where Curiosity first crossed onto the mountain, in 2014.' },
+        { name: 'Bagnold Dunes', type: 'Dunes', lat: -4.68, lon: 137.35, zoom: 12, approx: true,
+          desc: 'A field of dark, active sand dunes moved by the wind. Soft sand is a hazard for rovers and astronauts on foot.' },
+        { name: 'Vera Rubin Ridge', type: 'Ridge', lat: -4.71, lon: 137.37, zoom: 13, approx: true,
+          desc: 'A ridge rich in hematite, an iron mineral that often forms with water. Curiosity climbed and studied it in 2017–2019.' },
+        { name: 'Glen Torridon', type: 'Rock outcrop', lat: -4.73, lon: 137.385, zoom: 13, approx: true,
+          desc: 'A shallow, clay-rich valley explored from January 2019 to January 2021. It has the most clay minerals and the widest variety of organic molecules Curiosity has found.' },
+        { name: 'Greenheugh Pediment', type: 'Ridge', lat: -4.745, lon: 137.37, zoom: 13, approx: true,
+          desc: 'A sloping plateau capped by hard sandstone. Sharp, "gator-back" rocks made it very difficult for the rover to cross.' },
+        { name: 'Gediz Vallis Ridge', type: 'Ridge', lat: -4.765, lon: 137.39, zoom: 13, approx: true,
+          desc: 'A ridge built from debris flows that carried mud and boulders down the mountain. It holds material from upper layers of Mount Sharp that Curiosity will never reach.' },
+        { name: 'Gediz Vallis Channel', type: 'Channel', lat: -4.78, lon: 137.40, zoom: 13, approx: true,
+          desc: 'A channel about 90 m wide, with dark sand on its sides and mounds of boulders in the center. Curiosity explored it starting in February 2024.' },
+        { name: 'Boxwork Region', type: 'Boxwork', lat: -4.80, lon: 137.39, zoom: 13, approx: true,
+          desc: 'A network of low mineral ridges and hollows that stretches 10–20 km across Mount Sharp. It formed when groundwater moved through cracks in the rock. Curiosity began studying it in 2025.' },
+        { name: 'MARS PATH EVA Site', type: 'EVA site', lat: -4.80, lon: 137.39, zoom: 13, approx: true,
+          desc: 'Target of the MARS PATH EVA 01 mission, inside the boxwork region. The crew will map and sample the mineral ridges to learn about ancient groundwater.' }
+    ];
+
+    // Illustrative EVA plan (demo data). Adjust after checking the terrain in Mars Trek.
+    const ROUTE_WAYPOINTS = [
+        { name: 'Habitat / Base Camp', lat: -4.765, lon: 137.365,
+          desc: 'Starting and return point of the EVA. The crew checks suits, tools and communications here.' },
+        { name: 'Waypoint 1 – Layered Outcrop', lat: -4.780, lon: 137.377,
+          desc: 'Exposed rock layers. Photograph the layers and collect a small rock sample.' },
+        { name: 'Waypoint 2 – Boxwork Ridges', lat: -4.800, lon: 137.390,
+          desc: 'Main science stop. Map the ridge network and measure ridge height and spacing.' },
+        { name: 'Waypoint 3 – Ridge Sample Site', lat: -4.813, lon: 137.403,
+          desc: 'Collect samples from the mineral ridges to look for clues about ancient groundwater.' }
+    ];
+
+    const RISK_ZONES = [
+        { name: 'Steep Slope Zone', level: 'High', reason: 'Slopes above 15°',
+          desc: 'Steep terrain with a high risk of slipping or falling while carrying equipment. Do not enter on foot.',
+          coords: [[137.410, -4.780], [137.427, -4.783], [137.429, -4.807], [137.413, -4.810], [137.408, -4.795], [137.410, -4.780]] },
+        { name: 'Soft Sand Field', level: 'Medium', reason: 'Loose sand',
+          desc: 'Sand where boots and wheels can sink. Cross only if necessary, and slowly.',
+          coords: [[137.347, -4.773], [137.364, -4.775], [137.366, -4.792], [137.352, -4.797], [137.345, -4.785], [137.347, -4.773]] },
+        { name: 'Boulder Field', level: 'Medium', reason: 'Large rocks',
+          desc: 'Area with many large rocks that block movement and can damage suits or tools.',
+          coords: [[137.384, -4.820], [137.396, -4.819], [137.398, -4.830], [137.386, -4.832], [137.384, -4.820]] }
+    ];
+
+    const RISK_COLORS = {
+        'High':   { stroke: '#ff4d4d', fill: 'rgba(255, 77, 77, 0.30)' },
+        'Medium': { stroke: '#ffb020', fill: 'rgba(255, 176, 32, 0.28)' },
+        'Low':    { stroke: '#ffe066', fill: 'rgba(255, 224, 102, 0.25)' }
+    };
+
+    /* ---------------------------------------------------------
+       2. HELPERS
+       --------------------------------------------------------- */
+
+    function formatCoords(lon, lat) {
+        return Math.abs(lat).toFixed(4) + '° ' + (lat >= 0 ? 'N' : 'S') + ', ' +
+               Math.abs(lon).toFixed(4) + '° ' + (lon >= 0 ? 'E' : 'W');
+    }
+
+    function marsDistanceKm(lon1, lat1, lon2, lat2) {
+        const r = Math.PI / 180;
+        const dLat = (lat2 - lat1) * r, dLon = (lon2 - lon1) * r;
+        const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin(dLon / 2) ** 2;
+        return 2 * MARS_RADIUS_KM * Math.asin(Math.sqrt(a));
+    }
+
+    function routeDistanceKm() {
+        let oneWay = 0;
+        for (let i = 1; i < ROUTE_WAYPOINTS.length; i++) {
+            const a = ROUTE_WAYPOINTS[i - 1], b = ROUTE_WAYPOINTS[i];
+            oneWay += marsDistanceKm(a.lon, a.lat, b.lon, b.lat);
+        }
+        return oneWay * 2; // returns to base along the same path
+    }
+
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function inRegion(lon, lat) {
+        return lon >= REGION_EXTENT[0] && lon <= REGION_EXTENT[2] && lat >= REGION_EXTENT[1] && lat <= REGION_EXTENT[3];
+    }
+
+    // Mars Trek equirectangular tile grid (level 0 = 2 x 1 tiles of 256 px)
+    function makeTileGrid(maxZoom) {
+        const resolutions = [];
+        for (let z = 0; z <= maxZoom; z++) resolutions.push(0.703125 / Math.pow(2, z));
+        return new ol.tilegrid.TileGrid({ extent: [-180, -90, 180, 90], origin: [-180, 90], tileSize: 256, resolutions });
+    }
+
+    function trekXYZ(url, maxZoom, attribution) {
+        return new ol.source.XYZ({
+            projection: 'EPSG:4326',
+            tileGrid: makeTileGrid(maxZoom),
+            url: url,
+            wrapX: false,
+            attributions: attribution
+        });
+    }
+
+    // Reads a Mars Trek layer's WMTSCapabilities to get its real tile URL and zoom levels
+    async function trekFromCapabilities(layerId) {
+        const res = await fetch(TREK_BASE + layerId + '/1.0.0/WMTSCapabilities.xml');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const xml = await res.text();
+        const m = xml.match(/template="([^"]+)"/);
+        if (!m) throw new Error('No tile template');
+        const levels = (xml.match(/<TileMatrix>/g) || xml.match(/<TileMatrix\b/g) || []).length;
+        const url = m[1].replace('{TileMatrix}', '{z}').replace('{TileRow}', '{y}').replace('{TileCol}', '{x}');
+        return { url: url, maxZoom: Math.max(1, Math.min(levels - 1, 18)) || 13 };
+    }
+
+    /* ---------------------------------------------------------
+       3. LAYERS
+       --------------------------------------------------------- */
+
+    const mapEl = document.getElementById('mars-map');
+    if (!mapEl || typeof ol === 'undefined') {
+        if (mapEl) mapEl.innerHTML = '<p class="map-error">The map library could not load. Check your internet connection.</p>';
+        return;
+    }
+
+    const tileStatusEl = document.getElementById('tile-status');
+    function setTileStatus(text, ok) {
+        if (!tileStatusEl) return;
+        tileStatusEl.textContent = text;
+        tileStatusEl.className = ok ? 'tile-ok' : 'tile-error';
+    }
+
+    // Base map: starts with the Viking global mosaic, then upgrades to 5 m CTX
+    const VIKING_URL = TREK_BASE + 'Mars_Viking_MDIM21_ClrMosaic_global_232m/1.0.0/default/default028mm/{z}/{y}/{x}.jpg';
+    const baseLayer = new ol.layer.Tile({
+        source: trekXYZ(VIKING_URL, 7, 'Viking MDIM 2.1: NASA/USGS')
+    });
+
+    let baseLoaded = false;
+    function watchSource(source, okText) {
+        source.on('tileloadend', () => {
+            if (!baseLoaded) { baseLoaded = true; }
+            setTileStatus(okText, true);
+        });
+    }
+    watchSource(baseLayer.getSource(), 'Imagery: NASA Mars Trek · Viking color mosaic');
+    setTimeout(() => { if (!baseLoaded) setTileStatus('NASA imagery unavailable – check your internet connection', false); }, 12000);
+
+    trekFromCapabilities('CTX_beta01_uncontrolled_5m_Caltech')
+        .then(info => {
+            const ctx = trekXYZ(info.url, info.maxZoom, 'CTX mosaic: NASA/JPL/MSSS, Caltech Murray Lab');
+            watchSource(ctx, 'Imagery: NASA Mars Trek · CTX mosaic (5 m/pixel)');
+            baseLayer.setSource(ctx);
+        })
+        .catch(() => { /* keep Viking mosaic */ });
+
+    // Topography & elevation: MOLA colorized shaded relief
+    const topoLayer = new ol.layer.Tile({
+        source: trekXYZ(TREK_BASE + 'Mars_MGS_MOLA_ClrShade_merge_global_463m/1.0.0/default/default028mm/{z}/{y}/{x}.jpg',
+                        6, 'MOLA: NASA/GSFC'),
+        opacity: 0.6,
+        visible: false
+    });
+
+    // Mars color: Viking color mosaic blended over the black & white CTX detail
+    // (CSS "color" blend keeps CTX brightness/detail and takes Viking's hue)
+    const colorLayer = new ol.layer.Tile({
+        className: 'mars-color-layer',
+        source: trekXYZ(VIKING_URL, 7),
+        opacity: 0.9,
+        visible: true
+    });
+
+    // Coordinate grid
+    const gridLayer = new ol.layer.Graticule({
+        strokeStyle: new ol.style.Stroke({ color: 'rgba(255,255,255,0.2)', width: 1 }),
+        showLabels: true,
+        wrapX: false,
+        visible: false
+    });
+
+    // Surface features
+    const featureSource = new ol.source.Vector({ wrapX: false });
+    SURFACE_FEATURES.forEach(f => {
+        const feat = new ol.Feature({ geometry: new ol.geom.Point([f.lon, f.lat]) });
+        feat.setProperties({ kind: 'feature', data: f });
+        featureSource.addFeature(feat);
+    });
+
+    // Exploration route
+    const routeSource = new ol.source.Vector({ wrapX: false });
+    const routeLine = new ol.Feature({ geometry: new ol.geom.LineString(ROUTE_WAYPOINTS.map(w => [w.lon, w.lat])) });
+    routeLine.setProperties({ kind: 'route' });
+    routeSource.addFeature(routeLine);
+    ROUTE_WAYPOINTS.forEach((w, i) => {
+        const feat = new ol.Feature({ geometry: new ol.geom.Point([w.lon, w.lat]) });
+        feat.setProperties({ kind: 'waypoint', data: w, index: i });
+        routeSource.addFeature(feat);
+    });
+
+    const routeLayer = new ol.layer.Vector({
+        source: routeSource,
+        zIndex: 40,
+        style: function (feature) {
+            if (feature.get('kind') === 'route') {
+                return [
+                    new ol.style.Style({ stroke: new ol.style.Stroke({ color: 'rgba(0,0,0,0.6)', width: 7 }) }),
+                    new ol.style.Style({ stroke: new ol.style.Stroke({ color: '#64d69a', width: 3, lineDash: [10, 6] }) })
+                ];
+            }
+            const i = feature.get('index');
+            return new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 11,
+                    fill: new ol.style.Fill({ color: i === 0 ? '#ff8955' : '#64d69a' }),
+                    stroke: new ol.style.Stroke({ color: '#0b0f17', width: 2 })
+                }),
+                text: new ol.style.Text({
+                    text: i === 0 ? 'B' : String(i),
+                    font: 'bold 12px Arial, sans-serif',
+                    fill: new ol.style.Fill({ color: '#0b0f17' })
+                })
+            });
+        }
+    });
+
+    const featureLayer = new ol.layer.Vector({
+        source: featureSource,
+        declutter: true,
+        zIndex: 30,
+        style: function (feature, resolution) {
+            const d = feature.get('data');
+            const isEva = d.type === 'EVA site';
+            // Zoomed into the EVA site: show the route instead of the marker
+            if (isEva && resolution < 0.0004 && routeLayer.getVisible()) return null;
+            // Boxwork shares its spot with the EVA site marker / waypoint 2
+            if (d.type === 'Boxwork' && (resolution >= 0.0004 || routeLayer.getVisible())) return null;
+            return new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: isEva ? 8 : 6,
+                    fill: new ol.style.Fill({ color: TYPE_COLORS[d.type] || '#ffffff' }),
+                    stroke: new ol.style.Stroke({ color: '#0b0f17', width: 2 })
+                }),
+                text: new ol.style.Text({
+                    text: d.name,
+                    font: '600 11px Arial, sans-serif',
+                    offsetY: -16,
+                    fill: new ol.style.Fill({ color: '#ffffff' }),
+                    stroke: new ol.style.Stroke({ color: 'rgba(0,0,0,0.85)', width: 3 })
+                })
+            });
+        }
+    });
+
+    // Risk zones
+    const riskSource = new ol.source.Vector({ wrapX: false });
+    RISK_ZONES.forEach(z => {
+        const feat = new ol.Feature({ geometry: new ol.geom.Polygon([z.coords]) });
+        feat.setProperties({ kind: 'risk', data: z });
+        riskSource.addFeature(feat);
+    });
+
+    const riskLayer = new ol.layer.Vector({
+        source: riskSource,
+        zIndex: 20,
+        style: function (feature, resolution) {
+            const z = feature.get('data');
+            const c = RISK_COLORS[z.level];
+            return new ol.style.Style({
+                stroke: new ol.style.Stroke({ color: c.stroke, width: 2 }),
+                fill: new ol.style.Fill({ color: c.fill }),
+                text: resolution < 0.0003 ? new ol.style.Text({
+                    text: '⚠ ' + z.name,
+                    overflow: true,
+                    font: 'bold 11px Arial, sans-serif',
+                    fill: new ol.style.Fill({ color: '#ffffff' }),
+                    stroke: new ol.style.Stroke({ color: 'rgba(0,0,0,0.85)', width: 3 })
+                }) : undefined
+            });
+        }
+    });
+
+    // Curiosity's real traverse (live NASA data, if the service allows it)
+    const curiositySource = new ol.source.Vector({ wrapX: false });
+    const curiosityLayer = new ol.layer.Vector({
+        source: curiositySource,
+        zIndex: 25,
+        visible: true,
+        style: function (feature) {
+            if (feature.get('kind') === 'curiosity-now') {
+                return new ol.style.Style({
+                    image: new ol.style.RegularShape({
+                        points: 4, radius: 9, angle: Math.PI / 4,
+                        fill: new ol.style.Fill({ color: '#ffd166' }),
+                        stroke: new ol.style.Stroke({ color: '#0b0f17', width: 2 })
+                    }),
+                    text: new ol.style.Text({
+                        text: 'Curiosity (latest)',
+                        font: '600 11px Arial, sans-serif',
+                        offsetY: 18,
+                        fill: new ol.style.Fill({ color: '#ffd166' }),
+                        stroke: new ol.style.Stroke({ color: 'rgba(0,0,0,0.85)', width: 3 })
+                    })
+                });
+            }
+            return new ol.style.Style({ stroke: new ol.style.Stroke({ color: '#ffd166', width: 2 }) });
+        }
+    });
+
+    const curiosityStatusEl = document.getElementById('curiosity-status');
+    function setCuriosityStatus(text, ok) {
+        if (!curiosityStatusEl) return;
+        curiosityStatusEl.textContent = text;
+        curiosityStatusEl.className = 'layer-status ' + (ok ? 'ok' : 'off');
+    }
+
+    async function loadCuriosityTraverse() {
+        const geojson = new ol.format.GeoJSON();
+        try {
+            const res = await fetch('https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json');
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            const feats = geojson.readFeatures(data, { dataProjection: 'EPSG:4326', featureProjection: 'EPSG:4326' })
+                .filter(f => f.getGeometry());
+            feats.forEach(f => f.set('kind', 'curiosity-path'));
+            curiositySource.addFeatures(feats);
+
+            // Latest point of the path = latest reported rover position
+            let last = null;
+            feats.forEach(f => {
+                const g = f.getGeometry();
+                if (g.getType() === 'LineString') last = g.getLastCoordinate();
+                if (g.getType() === 'MultiLineString') {
+                    const lines = g.getLineStrings();
+                    if (lines.length) last = lines[lines.length - 1].getLastCoordinate();
+                }
+            });
+            if (last && inRegion(last[0], last[1])) {
+                const now = new ol.Feature({ geometry: new ol.geom.Point([last[0], last[1]]) });
+                now.set('kind', 'curiosity-now');
+                curiositySource.addFeature(now);
+            }
+            setCuriosityStatus('live', true);
+        } catch (e) {
+            setCuriosityStatus('unavailable', false);
+        }
+    }
+
+    /* ---------------------------------------------------------
+       4. MAP
+       --------------------------------------------------------- */
+
+    const view = new ol.View({
+        projection: 'EPSG:4326',
+        center: REGION_CENTER,
+        zoom: REGION_ZOOM,
+        minZoom: 7,
+        maxZoom: 16,
+        extent: REGION_EXTENT,
+        constrainOnlyCenter: false,
+        smoothExtentConstraint: true
+    });
+
+    const map = new ol.Map({
+        target: mapEl,
+        layers: [baseLayer, colorLayer, topoLayer, gridLayer, riskLayer, curiosityLayer, routeLayer, featureLayer],
+        view: view,
+        controls: ol.control.defaults.defaults({ attributionOptions: { collapsible: true } })
+            .extend([new ol.control.FullScreen()])
+    });
+
+    // Selected point marker
+    const selectSource = new ol.source.Vector({ wrapX: false });
+    const selectLayer = new ol.layer.Vector({
+        source: selectSource,
+        zIndex: 50,
+        style: new ol.style.Style({
+            image: new ol.style.Circle({ radius: 14, stroke: new ol.style.Stroke({ color: '#ffffff', width: 2, lineDash: [4, 3] }) })
+        })
+    });
+    map.addLayer(selectLayer);
+
+    function markSelection(lon, lat) {
+        selectSource.clear();
+        selectSource.addFeature(new ol.Feature({ geometry: new ol.geom.Point([lon, lat]) }));
+    }
+
+    function flyTo(lon, lat, zoom) {
+        view.animate({ center: [lon, lat], zoom: zoom, duration: 1200 });
+    }
+
+    // Locator inset: where Gale is on Mars
+    const insetEl = document.getElementById('mars-inset');
+    if (insetEl) {
+        const galeMarker = new ol.Feature({ geometry: new ol.geom.Point([137.8, -5.4]) });
+        new ol.Map({
+            target: insetEl,
+            controls: [],
+            interactions: [],
+            layers: [
+                new ol.layer.Tile({ source: trekXYZ(VIKING_URL, 3) }),
+                new ol.layer.Vector({
+                    source: new ol.source.Vector({ features: [galeMarker], wrapX: false }),
+                    style: new ol.style.Style({
+                        image: new ol.style.Circle({
+                            radius: 5,
+                            fill: new ol.style.Fill({ color: '#ff8955' }),
+                            stroke: new ol.style.Stroke({ color: '#ffffff', width: 2 })
+                        })
+                    })
+                })
+            ],
+            view: new ol.View({ projection: 'EPSG:4326', center: [0, 0], resolution: 2.0, extent: [-180, -90, 180, 90] })
+        });
+    }
+
+    // Shared state – used later by Mission Status and Route Planner
+    const state = {
+        selected: null,
+        layers: { route: true, topo: false, risk: true, features: true, curiosity: true, grid: false },
+        route: { waypoints: ROUTE_WAYPOINTS, distanceKm: routeDistanceKm() },
+        riskZones: RISK_ZONES
+    };
+    window.marsPath = { map: map, state: state, flyTo: flyTo,
+        // shared with the Route Planner
+        data: { SURFACE_FEATURES, ROUTE_WAYPOINTS, RISK_ZONES, TYPE_COLORS, RISK_COLORS, REGION_EXTENT } };
+
+    function emitUpdate() {
+        document.dispatchEvent(new CustomEvent('marspath:update', { detail: state }));
+    }
+
+    /* ---------------------------------------------------------
+       5. LOCATION INFORMATION PANEL
+       --------------------------------------------------------- */
+
+    const infoEl = document.getElementById('location-info');
+
+    function coordsBlock(lon, lat, approx) {
+        return '<div class="info-coords">' +
+               '<span>Coordinates' + (approx ? ' · approximate' : '') + '</span>' +
+               '<strong>' + formatCoords(lon, lat) + '</strong>' +
+               '<small>Lat ' + lat.toFixed(4) + '°, Lon ' + lon.toFixed(4) + '° E</small>' +
+               '</div>';
+    }
+
+    function render(html, selected) {
+        infoEl.innerHTML = '<p class="card-label">LOCATION INFORMATION</p>' + html;
+        state.selected = selected;
+        markSelection(selected.lon, selected.lat);
+        emitUpdate();
+    }
+
+    function badge(text, color) {
+        return '<span class="type-badge" style="--badge:' + color + '">' + escapeHtml(text) + '</span>';
+    }
+
+    function showFeatureInfo(d) {
+        let html = badge(d.type, TYPE_COLORS[d.type] || '#ffffff') +
+            '<h3 class="info-title">' + escapeHtml(d.name) + '</h3>' +
+            coordsBlock(d.lon, d.lat, d.approx) +
+            '<p class="info-desc">' + escapeHtml(d.desc) + '</p>';
+        if (d.type === 'EVA site') {
+            html += '<p class="info-extra">Route: ' + ROUTE_WAYPOINTS.length + ' stops · ' +
+                    state.route.distanceKm.toFixed(1) + ' km round trip</p>';
+        }
+        render(html, { name: d.name, type: d.type, lon: d.lon, lat: d.lat });
+    }
+
+    function showWaypointInfo(w, index) {
+        render(badge(index === 0 ? 'Base camp' : 'Route waypoint ' + index, index === 0 ? '#ff8955' : '#64d69a') +
+            '<h3 class="info-title">' + escapeHtml(w.name) + '</h3>' +
+            coordsBlock(w.lon, w.lat, false) +
+            '<p class="info-desc">' + escapeHtml(w.desc) + '</p>' +
+            '<p class="info-extra">Part of the EVA 01 route (' + state.route.distanceKm.toFixed(1) + ' km round trip).</p>',
+            { name: w.name, type: 'Waypoint', lon: w.lon, lat: w.lat });
+    }
+
+    function showRiskInfo(z, lon, lat) {
+        render(badge('Risk zone · ' + z.level, RISK_COLORS[z.level].stroke) +
+            '<h3 class="info-title">⚠ ' + escapeHtml(z.name) + '</h3>' +
+            coordsBlock(lon, lat, false) +
+            '<p class="info-desc"><strong>Hazard:</strong> ' + escapeHtml(z.reason) + '. ' + escapeHtml(z.desc) + '</p>',
+            { name: z.name, type: 'Risk zone', lon: lon, lat: lat });
+    }
+
+    function showRouteInfo(lon, lat) {
+        render(badge('Exploration route', '#64d69a') +
+            '<h3 class="info-title">EVA 01 Route</h3>' +
+            coordsBlock(lon, lat, false) +
+            '<p class="info-desc">Planned walking route from the base camp to the boxwork ridges and back, avoiding the steep slope zone, the soft sand and the boulder field.</p>' +
+            '<p class="info-extra">' + ROUTE_WAYPOINTS.length + ' stops · ' + state.route.distanceKm.toFixed(1) + ' km round trip</p>',
+            { name: 'EVA 01 Route', type: 'Route', lon: lon, lat: lat });
+    }
+
+    function showCuriosityInfo(lon, lat, isNow) {
+        render(badge(isNow ? 'Rover position' : 'Rover path', '#ffd166') +
+            '<h3 class="info-title">' + (isNow ? 'Curiosity – latest position' : 'Curiosity\'s real path') + '</h3>' +
+            coordsBlock(lon, lat, false) +
+            '<p class="info-desc">Route actually driven by NASA\'s Curiosity rover since its 2012 landing, loaded live from NASA\'s mission map data.</p>',
+            { name: 'Curiosity traverse', type: 'Rover path', lon: lon, lat: lat });
+    }
+
+    function showPointInfo(lon, lat) {
+        let nearest = null, best = Infinity;
+        SURFACE_FEATURES.forEach(f => {
+            const d = marsDistanceKm(lon, lat, f.lon, f.lat);
+            if (d < best) { best = d; nearest = f; }
+        });
+        const dist = best < 1 ? Math.round(best * 1000) + ' m' : best.toFixed(1) + ' km';
+        render(badge('Selected point', '#aebaca') +
+            '<h3 class="info-title">Unnamed location</h3>' +
+            coordsBlock(lon, lat, false) +
+            '<p class="info-desc">No named feature at this exact point.</p>' +
+            (nearest ? '<p class="info-extra">Nearest feature: <a href="#" class="nearest-link">' +
+                escapeHtml(nearest.name) + '</a> · ' + dist + ' away</p>' : ''),
+            { name: null, type: 'Point', lon: lon, lat: lat });
+        const link = infoEl.querySelector('.nearest-link');
+        if (link) link.addEventListener('click', e => {
+            e.preventDefault();
+            flyTo(nearest.lon, nearest.lat, nearest.zoom);
+            showFeatureInfo(nearest);
+        });
+    }
+
+    map.on('singleclick', function (evt) {
+        const [lon, lat] = evt.coordinate;
+        const hit = map.forEachFeatureAtPixel(evt.pixel, f => f, { hitTolerance: 5, layerFilter: l => l !== selectLayer });
+        if (!hit) return showPointInfo(lon, lat);
+
+        switch (hit.get('kind')) {
+            case 'feature': {
+                const d = hit.get('data');
+                showFeatureInfo(d);
+                if (view.getZoom() < d.zoom - 1) flyTo(d.lon, d.lat, d.zoom);
+                break;
+            }
+            case 'waypoint': showWaypointInfo(hit.get('data'), hit.get('index')); break;
+            case 'risk': showRiskInfo(hit.get('data'), lon, lat); break;
+            case 'route': showRouteInfo(lon, lat); break;
+            case 'curiosity-now': {
+                const c = hit.getGeometry().getCoordinates();
+                showCuriosityInfo(c[0], c[1], true);
+                break;
+            }
+            case 'curiosity-path': showCuriosityInfo(lon, lat, false); break;
+            default: showPointInfo(lon, lat);
+        }
+    });
+
+    // Cursor coordinates
+    const mouseCoordsEl = document.getElementById('mouse-coords');
+    mapEl.addEventListener('mouseleave', () => { if (mouseCoordsEl) mouseCoordsEl.textContent = '—'; });
+
+    map.on('pointermove', function (evt) {
+        if (mouseCoordsEl) mouseCoordsEl.textContent = formatCoords(evt.coordinate[0], evt.coordinate[1]);
+        if (evt.dragging) return;
+        const hit = map.hasFeatureAtPixel(evt.pixel, { hitTolerance: 5, layerFilter: l => l !== selectLayer });
+        mapEl.style.cursor = hit ? 'pointer' : '';
+    });
+
+    /* ---------------------------------------------------------
+       6. LOCATION SEARCH
+       --------------------------------------------------------- */
+
+    const searchInput = document.getElementById('loc-search');
+    const resultsEl = document.getElementById('search-results');
+
+    function parseCoords(text) {
+        // "lat, lon"  e.g. "-4.8, 137.39"  or  "4.8S 137.39E"
+        const m = text.trim().match(/^(-?\d+(?:\.\d+)?)\s*°?\s*([NS])?[\s,]+(-?\d+(?:\.\d+)?)\s*°?\s*([EW])?$/i);
+        if (!m) return null;
+        let lat = parseFloat(m[1]), lon = parseFloat(m[3]);
+        if (m[2] && m[2].toUpperCase() === 'S') lat = -Math.abs(lat);
+        if (m[4] && m[4].toUpperCase() === 'W') lon = -Math.abs(lon);
+        if (lon > 180) lon -= 360;
+        return { lat: lat, lon: lon };
+    }
+
+    function renderResults(text) {
+        const q = text.trim().toLowerCase();
+        resultsEl.innerHTML = '';
+        if (!q) { resultsEl.classList.remove('open'); return; }
+
+        const items = [];
+        const coords = parseCoords(text);
+        if (coords) items.push({ coords: coords });
+
+        SURFACE_FEATURES
+            .filter(f => f.name.toLowerCase().includes(q) || f.type.toLowerCase().includes(q))
+            .forEach(f => items.push({ feature: f }));
+
+        if (!items.length) {
+            resultsEl.innerHTML = '<li class="no-result">No places found in the Mount Sharp region</li>';
+            resultsEl.classList.add('open');
+            return;
+        }
+
+        items.slice(0, 8).forEach(item => {
+            const li = document.createElement('li');
+            if (item.coords) {
+                const ok = inRegion(item.coords.lon, item.coords.lat);
+                li.innerHTML = '<span class="dot" style="background:#aebaca"></span>' +
+                    (ok ? 'Go to ' + formatCoords(item.coords.lon, item.coords.lat) : 'Outside the Gale Crater map area');
+                if (ok) li.addEventListener('click', () => selectResult(item));
+                else li.className = 'no-result';
+            } else {
+                const f = item.feature;
+                li.innerHTML = '<span class="dot" style="background:' + TYPE_COLORS[f.type] + '"></span>' +
+                    escapeHtml(f.name) + '<small>' + escapeHtml(f.type) + '</small>';
+                li.addEventListener('click', () => selectResult(item));
+            }
+            resultsEl.appendChild(li);
+        });
+        resultsEl.classList.add('open');
+    }
+
+    function selectResult(item) {
+        if (item.coords) {
+            flyTo(item.coords.lon, item.coords.lat, 12);
+            showPointInfo(item.coords.lon, item.coords.lat);
+        } else {
+            const f = item.feature;
+            flyTo(f.lon, f.lat, f.zoom);
+            showFeatureInfo(f);
+        }
+        searchInput.value = '';
+        resultsEl.innerHTML = '';
+        resultsEl.classList.remove('open');
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', e => renderResults(e.target.value));
+        searchInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                const first = resultsEl.querySelector('li:not(.no-result)');
+                if (first) first.click();
+            } else if (e.key === 'Escape') {
+                resultsEl.classList.remove('open');
+            }
+        });
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.search-box')) resultsEl.classList.remove('open');
+        });
+    }
+
+    /* ---------------------------------------------------------
+       7. LAYER CONTROLS
+       --------------------------------------------------------- */
+
+    const layerMap = {
+        route: routeLayer,
+        topo: topoLayer,
+        risk: riskLayer,
+        features: featureLayer,
+        curiosity: curiosityLayer,
+        grid: gridLayer
+    };
+
+    document.querySelectorAll('[data-layer]').forEach(input => {
+        const key = input.dataset.layer;
+        if (!layerMap[key]) return;
+        layerMap[key].setVisible(input.checked);
+        state.layers[key] = input.checked;
+        input.addEventListener('change', () => {
+            layerMap[key].setVisible(input.checked);
+            state.layers[key] = input.checked;
+            const legend = document.getElementById('elev-legend');
+            if (key === 'topo' && legend) legend.classList.toggle('visible', input.checked);
+            emitUpdate();
+        });
+    });
+
+    const opacityInput = document.getElementById('topo-opacity');
+    if (opacityInput) opacityInput.addEventListener('input', () => topoLayer.setOpacity(opacityInput.value / 100));
+
+    /* ---------------------------------------------------------
+       8. BUTTONS
+       --------------------------------------------------------- */
+
+    const evaSite = SURFACE_FEATURES.find(f => f.type === 'EVA site');
+    const btnRegion = document.getElementById('btn-region');
+    const btnEva = document.getElementById('btn-eva');
+
+    if (btnRegion) btnRegion.addEventListener('click', () => flyTo(REGION_CENTER[0], REGION_CENTER[1], REGION_ZOOM));
+    if (btnEva) btnEva.addEventListener('click', () => {
+        flyTo(evaSite.lon, evaSite.lat, evaSite.zoom);
+        showFeatureInfo(evaSite);
+    });
+
+    const btnColor = document.getElementById('btn-color');
+    function setMarsColor(on) {
+        colorLayer.setVisible(on);
+        state.layers.marsColor = on;
+        if (btnColor) {
+            btnColor.classList.toggle('active', on);
+            btnColor.textContent = on ? ' Mars color: ON' : ' Mars color: OFF';
+        }
+        emitUpdate();
+    }
+    if (btnColor) btnColor.addEventListener('click', () => setMarsColor(!colorLayer.getVisible()));
+    setMarsColor(true);
+
+    loadCuriosityTraverse();
+    emitUpdate();
+})();
+
+    </script>
+    <!-- MISSION STATUS: updates from the Route Planner -->
+    <script>
+    (function () {
+        'use strict';
+        const $ = id => document.getElementById(id);
+        if (!$('ms-badge')) return;
+
+        function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+        function km(v) { return v < 1 ? Math.round(v * 1000) + ' m' : v.toFixed(2) + ' km'; }
+        function time(h) { const hh = Math.floor(h), mm = Math.round((h - hh) * 60); return (hh ? hh + ' h ' : '') + mm + ' min'; }
+        function place(p, fallback) {
+            return p.name ? p.name : fallback + ' (' + Math.abs(p.lat).toFixed(3) + '° ' + (p.lat >= 0 ? 'N' : 'S') + ', ' + p.lon.toFixed(3) + '° E)';
+        }
+
+        function render(state) {
+            const r = state && state.plannedRoute;
+            const c = (state && state.conditions) || { sep: false, dust: false };
+            const badge = $('ms-badge');
+
+            // Radiation & weather follow the mission conditions
+            $('ms-radiation').innerHTML = c.sep
+                ? '<span class="bad">ALERT</span> – solar particle event, crew must stay in the shielded shelter'
+                : '<span class="ok">Nominal</span>, no solar storm alerts';
+            $('ms-weather').innerHTML = c.dust
+                ? '<span class="warn">Dust storm</span> – low visibility, keep the EVA short'
+                : '<span class="ok">Clear</span>, low dust activity';
+
+            if (!r) {
+                $('ms-target').textContent = 'Mount Sharp boxwork region, Gale Crater';
+                $('ms-route').innerHTML = '<span class="muted">No route planned yet – draw one in the Route Planner</span>';
+                $('ms-safety').innerHTML = '<span class="muted">Waiting for a route</span>';
+                if (c.sep) {
+                    badge.textContent = '● NO-GO'; badge.className = 'go-badge nogo';
+                    $('ms-readiness').innerHTML = '<span class="bad">NO-GO</span> – solar storm alert';
+                } else {
+                    badge.textContent = '● PENDING'; badge.className = 'go-badge pending';
+                    $('ms-readiness').innerHTML = '<span class="muted">PENDING</span> – plan a route to evaluate the EVA';
+                }
+                return;
+            }
+
+            const first = r.points[0], last = r.points[r.points.length - 1];
+            $('ms-target').textContent = place(last, 'Custom point');
+            $('ms-route').innerHTML = esc(place(first, 'Start')) + ' → ' + esc(place(last, 'Final stop')) +
+                '<br><span class="muted">' + km(r.distanceKm) + ' · ' + r.segments + ' segment' + (r.segments > 1 ? 's' : '') +
+                ' · est. ' + time(r.hours) + '</span>';
+
+            const reasons = r.reasons && r.reasons.length ? ' – ' + esc(r.reasons.join('; ')) : '';
+            if (r.verdict === 'unsafe') {
+                $('ms-safety').innerHTML = '<span class="bad">NOT SAFE</span>' + reasons;
+                $('ms-readiness').innerHTML = '<span class="bad">NO-GO</span> – change the route or wait for better conditions';
+                badge.textContent = '● NO-GO'; badge.className = 'go-badge nogo';
+            } else if (r.verdict === 'caution') {
+                $('ms-safety').innerHTML = '<span class="warn">CAUTION</span>' + reasons;
+                $('ms-readiness').innerHTML = '<span class="warn">GO WITH CAUTION</span> – review the hazards before leaving';
+                badge.textContent = '● CAUTION'; badge.className = 'go-badge caution';
+            } else {
+                $('ms-safety').innerHTML = '<span class="ok">SAFE</span> – no problems found in the mapped data (preliminary)';
+                $('ms-readiness').innerHTML = '<span class="ok">GO</span> – confirm with high-resolution images before the EVA';
+                badge.textContent = '● GO'; badge.className = 'go-badge';
+            }
+        }
+
+        document.addEventListener('marspath:update', e => render(e.detail));
+        render(window.marsPath && window.marsPath.state);
+    })();
+    </script>
+    <!-- ROUTE PLANNER (Leaflet): click-to-draw multi-segment route + safety check -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+    (function () {
+        'use strict';
+        const $ = id => document.getElementById(id);
+        if (typeof L === 'undefined') {
+            $('rp-hint').textContent = 'Map library (Leaflet) could not load – check your internet connection.';
+            return;
+        }
+
+        /* -----------------------------------------------------
+           DATA
+           ----------------------------------------------------- */
+        const shared = (window.marsPath && window.marsPath.data) || {};
+        const SITES = shared.SURFACE_FEATURES || [];
+        const TYPE_COLORS = shared.TYPE_COLORS || {};
+        const EXTENT = shared.REGION_EXTENT || [136.3, -6.9, 139.3, -3.9];   // [minLon, minLat, maxLon, maxLat]
+        const TREK = 'https://trek.nasa.gov/tiles/Mars/EQ/';
+        const R_MARS_KM = 3389.5;
+
+        // Assumptions (shown to the user)
+        const WALK_KMH = 2.0;            // suited astronaut on uneven terrain
+        const STOP_MIN = 20;             // time spent at each intermediate stop
+        const RAD_MSV_PER_DAY = 0.67;    // Curiosity RAD average at Gale (2012–2013)
+
+        // Hazard zones. Circles: approximate positions of real terrain described by NASA.
+        const ZONES = [
+            { name: 'Bagnold Dunes', level: 'Medium', kind: 'Soft sand', shape: 'circle', lat: -4.68, lon: 137.35, radiusKm: 1.2,
+              text: 'Active dark sand dunes. Boots and wheels can sink; walking is slow and tiring.' },
+            { name: 'Greenheugh Pediment', level: 'Medium', kind: 'Sharp rocks', shape: 'circle', lat: -4.745, lon: 137.37, radiusKm: 0.6,
+              text: 'Hard sandstone cap with sharp "gator-back" rocks that were very hard for Curiosity to cross. Risk of cutting suits or tripping.' },
+            { name: 'Gediz Vallis Channel', level: 'Medium', kind: 'Boulders / steep sides', shape: 'circle', lat: -4.78, lon: 137.40, radiusKm: 0.45,
+              text: 'Channel filled with boulder mounds, with dark sand on its sides and a steep climb to reach it.' },
+            { name: 'Mount Sharp upper slopes', level: 'High', kind: 'Steep relief', shape: 'circle', lat: -5.08, lon: 137.85, radiusKm: 12,
+              text: 'The upper part of a 5 km tall mountain: steep slopes, cliffs and wind-carved ridges. Not suitable for a walking EVA.' },
+            { name: 'Gale Crater rim wall', level: 'High', kind: 'Steep relief', shape: 'ring', lat: -5.4, lon: 137.8, innerKm: 66, outerKm: 90,
+              text: 'The inner wall of the crater rim rises several kilometers with steep slopes.' }
+        ];
+        // EVA-site zones from the Mars Explorer demo plan
+        (shared.RISK_ZONES || []).forEach(z => ZONES.push({
+            name: z.name, level: z.level, kind: z.reason, shape: 'polygon', coords: z.coords, text: z.desc, demo: true
+        }));
+
+        const LEVEL_COLORS = { High: '#ff4d4d', Medium: '#ffb020', Low: '#ffe066' };
+
+        /* -----------------------------------------------------
+           GEOMETRY HELPERS
+           ----------------------------------------------------- */
+        function distKm(lat1, lon1, lat2, lon2) {
+            const r = Math.PI / 180, dLat = (lat2 - lat1) * r, dLon = (lon2 - lon1) * r;
+            const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin(dLon / 2) ** 2;
+            return 2 * R_MARS_KM * Math.asin(Math.sqrt(a));
+        }
+        function inPolygon(lon, lat, coords) {
+            let inside = false;
+            for (let i = 0, j = coords.length - 1; i < coords.length; j = i++) {
+                const [xi, yi] = coords[i], [xj, yj] = coords[j];
+                if (((yi > lat) !== (yj > lat)) && (lon < (xj - xi) * (lat - yi) / (yj - yi) + xi)) inside = !inside;
+            }
+            return inside;
+        }
+        // distance (km) from a point to the zone (0 = inside)
+        function zoneDistance(z, lat, lon) {
+            if (z.shape === 'circle') return Math.max(0, distKm(lat, lon, z.lat, z.lon) - z.radiusKm);
+            if (z.shape === 'ring') {
+                const d = distKm(lat, lon, z.lat, z.lon);
+                return d >= z.innerKm && d <= z.outerKm ? 0 : Math.min(Math.abs(d - z.innerKm), Math.abs(d - z.outerKm));
+            }
+            if (inPolygon(lon, lat, z.coords)) return 0;
+            return Math.min(...z.coords.map(c => distKm(lat, lon, c[1], c[0])));
+        }
+        function fmtCoords(lat, lon) {
+            return Math.abs(lat).toFixed(4) + '° ' + (lat >= 0 ? 'N' : 'S') + ', ' + Math.abs(lon).toFixed(4) + '° ' + (lon >= 0 ? 'E' : 'W');
+        }
+        function fmtKm(km) { return km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(2) + ' km'; }
+        function fmtTime(h) { const hh = Math.floor(h), mm = Math.round((h - hh) * 60); return (hh ? hh + ' h ' : '') + mm + ' min'; }
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+        function nearestSite(lat, lon) {
+            let best = null, bd = Infinity;
+            SITES.forEach(s => { const d = distKm(lat, lon, s.lat, s.lon); if (d < bd) { bd = d; best = s; } });
+            return best && bd < 0.8 ? best.name : null;
+        }
+
+        /* -----------------------------------------------------
+           MAP
+           ----------------------------------------------------- */
+        const map = L.map('rp-map', {
+            crs: L.CRS.EPSG4326,                 // NASA Mars Trek tiles: level 0 = 2 x 1 tiles
+            minZoom: 7, maxZoom: 15,
+            maxBounds: [[EXTENT[1], EXTENT[0]], [EXTENT[3], EXTENT[2]]],
+            maxBoundsViscosity: 1.0,
+            doubleClickZoom: false
+        });
+        map.fitBounds([[-4.95, 137.25], [-4.50, 137.60]]);
+
+        const VIKING_URL = TREK + 'Mars_Viking_MDIM21_ClrMosaic_global_232m/1.0.0/default/default028mm/{z}/{y}/{x}.jpg';
+        L.tileLayer(VIKING_URL, { maxNativeZoom: 7, maxZoom: 15, noWrap: true, zIndex: 1, attribution: 'NASA Mars Trek · Viking' }).addTo(map);
+
+        // Mars color: Viking color blended over the black & white CTX detail (same trick as Mars Explorer)
+        const colorLayer = L.tileLayer(VIKING_URL, {
+            maxNativeZoom: 7, maxZoom: 15, noWrap: true, zIndex: 3, opacity: 0.9, className: 'mars-color-layer'
+        }).addTo(map);
+
+        fetch(TREK + 'CTX_beta01_uncontrolled_5m_Caltech/1.0.0/WMTSCapabilities.xml')
+            .then(r => r.ok ? r.text() : Promise.reject())
+            .then(xml => {
+                const m = xml.match(/template="([^"]+)"/);
+                if (!m) return;
+                const url = m[1].replace('{TileMatrix}', '{z}').replace('{TileRow}', '{y}').replace('{TileCol}', '{x}');
+                L.tileLayer(url, { maxNativeZoom: 13, maxZoom: 15, noWrap: true, zIndex: 2, attribution: 'MRO CTX mosaic' }).addTo(map);
+            })
+            .catch(() => {});
+
+        const topoLayer = L.tileLayer(TREK + 'Mars_MGS_MOLA_ClrShade_merge_global_463m/1.0.0/default/default028mm/{z}/{y}/{x}.jpg',
+            { maxNativeZoom: 6, maxZoom: 15, noWrap: true, zIndex: 4, opacity: 0.55, attribution: 'MGS MOLA' });
+
+        map.on('mousemove', e => { $('rp-cursor').textContent = fmtCoords(e.latlng.lat, e.latlng.lng); });
+        map.on('mouseout', () => { $('rp-cursor').textContent = '—'; });
+
+        // Hazard zones layer
+        const hazardLayer = L.layerGroup().addTo(map);
+        ZONES.forEach(z => {
+            const style = { color: LEVEL_COLORS[z.level], weight: 2, fillColor: LEVEL_COLORS[z.level], fillOpacity: 0.18, dashArray: z.demo ? null : '6 4' };
+            let shape;
+            if (z.shape === 'circle') shape = L.circle([z.lat, z.lon], Object.assign({ radius: z.radiusKm * 1000 }, style));
+            else if (z.shape === 'polygon') shape = L.polygon(z.coords.map(c => [c[1], c[0]]), style);
+            else return;   // the crater-rim ring is checked but not drawn (it is larger than the map view)
+            shape.bindTooltip('⚠ ' + z.name + ' · ' + z.level + ' risk' + (z.demo ? ' (demo plan)' : ' (approx. position)'), { sticky: true });
+            shape.addTo(hazardLayer);
+        });
+
+        // Sites from Mars Explorer
+        const siteLayer = L.layerGroup().addTo(map);
+        SITES.forEach(s => {
+            L.circleMarker([s.lat, s.lon], { radius: 6, color: '#0b0f17', weight: 2, fillColor: TYPE_COLORS[s.type] || '#ffffff', fillOpacity: 1, bubblingMouseEvents: false })
+                .bindTooltip(s.name + (s.approx ? ' (approx.)' : ''), { direction: 'top', offset: [0, -6] })
+                .on('click', () => { if (drawing) addPoint(s.lat, s.lon, s.name); })
+                .addTo(siteLayer);
+        });
+
+        // Mars color on/off: button on the map + checkbox in Map Layers, kept in sync
+        const ColorControl = L.Control.extend({
+            options: { position: 'topright' },
+            onAdd: function () {
+                const btn = L.DomUtil.create('button', 'map-btn color-btn active rp-color-btn');
+                btn.type = 'button';
+                btn.id = 'rp-color-btn';
+                btn.title = 'Turn the Mars color on or off';
+                L.DomEvent.disableClickPropagation(btn);
+                L.DomEvent.on(btn, 'click', () => setMarsColor(!map.hasLayer(colorLayer)));
+                return btn;
+            }
+        });
+        map.addControl(new ColorControl());
+
+        function setMarsColor(on) {
+            if (on) colorLayer.addTo(map); else map.removeLayer(colorLayer);
+            $('rp-lyr-color').checked = on;
+            const btn = $('rp-color-btn');
+            if (btn) {
+                btn.textContent = on ? ' Mars color: ON' : ' Mars color: OFF';
+                btn.classList.toggle('active', on);
+            }
+        }
+        $('rp-lyr-color').addEventListener('change', e => setMarsColor(e.target.checked));
+        setMarsColor(true);
+        $('rp-lyr-hazards').addEventListener('change', e => e.target.checked ? hazardLayer.addTo(map) : map.removeLayer(hazardLayer));
+        $('rp-lyr-sites').addEventListener('change', e => e.target.checked ? siteLayer.addTo(map) : map.removeLayer(siteLayer));
+        $('rp-lyr-topo').addEventListener('change', e => {
+            if (e.target.checked) topoLayer.addTo(map); else map.removeLayer(topoLayer);
+            $('rp-elev-legend').classList.toggle('visible', e.target.checked);
+        });
+        $('rp-topo-opacity').addEventListener('input', e => topoLayer.setOpacity(e.target.value / 100));
+
+        // Coordinate grid: latitude/longitude lines that adapt to the zoom level
+        const gridLayer = L.layerGroup();
+        const GRID_STEPS = [1, 0.5, 0.25, 0.2, 0.1, 0.05, 0.02, 0.01, 0.005, 0.002, 0.001];
+        function drawGrid() {
+            gridLayer.clearLayers();
+            if (!map.hasLayer(gridLayer)) return;
+            const b = map.getBounds();
+            const span = Math.max(b.getEast() - b.getWest(), b.getNorth() - b.getSouth());
+            // smallest step that still gives at most ~8 lines across the view
+            const step = GRID_STEPS.slice().reverse().find(s => span / s <= 8) || GRID_STEPS[0];
+            const dec = Math.max(0, Math.ceil(-Math.log10(step)));
+            const fmt = (v, pos, neg) => Math.abs(v).toFixed(dec) + '° ' + (v >= 0 ? pos : neg);
+            const line = { color: '#ffffff', weight: 1, opacity: 0.25, interactive: false };
+            for (let i = Math.ceil(b.getWest() / step); i * step <= b.getEast(); i++) {
+                const lon = i * step;
+                L.polyline([[b.getSouth(), lon], [b.getNorth(), lon]], line).addTo(gridLayer);
+                L.marker([b.getSouth(), lon], { interactive: false, keyboard: false,
+                    icon: L.divIcon({ className: 'rp-grid-label bottom', html: '<span>' + fmt(lon, 'E', 'W') + '</span>', iconSize: null }) }).addTo(gridLayer);
+            }
+            for (let i = Math.ceil(b.getSouth() / step); i * step <= b.getNorth(); i++) {
+                const lat = i * step;
+                L.polyline([[lat, b.getWest()], [lat, b.getEast()]], line).addTo(gridLayer);
+                L.marker([lat, b.getEast()], { interactive: false, keyboard: false,
+                    icon: L.divIcon({ className: 'rp-grid-label right', html: '<span>' + fmt(lat, 'N', 'S') + '</span>', iconSize: null }) }).addTo(gridLayer);
+            }
+        }
+        map.on('moveend zoomend resize', drawGrid);
+        $('rp-lyr-grid').addEventListener('change', e => {
+            if (e.target.checked) { gridLayer.addTo(map); drawGrid(); }
+            else map.removeLayer(gridLayer);
+        });
+
+        /* -----------------------------------------------------
+           DRAWING
+           ----------------------------------------------------- */
+        const points = [];                          // { lat, lon, name }
+        const routeLayer = L.layerGroup().addTo(map);
+        let drawing = false;
+
+        const ICONS = {
+            play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',
+            stop: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>'
+        };
+        function setDrawButton() {
+            const b = $('rp-draw');
+            $('rp-draw-icon').innerHTML = drawing ? ICONS.stop : ICONS.play;
+            $('rp-draw-label').textContent = drawing ? 'Finish route' : (points.length ? 'Continue route' : 'Start route');
+            $('rp-draw-sub').textContent = drawing ? 'Drawing… click to add stops' : (points.length ? 'Add more stops' : 'Click the map to add points');
+            b.classList.toggle('active', drawing);
+            $('rp-hint-box').classList.toggle('recording', drawing);
+        }
+        function setDrawing(on) {
+            drawing = on;
+            setDrawButton();
+            $('rp-map').classList.toggle('picking', on);
+            $('rp-hint').textContent = on
+                ? (points.length ? 'Click to add the next stop.' : 'Click on the map to set the starting point.')
+                : (points.length ? 'Route paused. You can continue or delete segments.' : 'Press “Start route” to begin.');
+        }
+
+        function addPoint(lat, lon, name) {
+            if (lon < EXTENT[0] || lon > EXTENT[2] || lat < EXTENT[1] || lat > EXTENT[3]) return;
+            points.push({ lat, lon, name: name || nearestSite(lat, lon) });
+            update();
+            $('rp-hint').textContent = points.length === 1 ? 'Starting point set. Click to add the next stop.' : 'Stop ' + (points.length - 1) + ' added. Keep clicking or press “Finish route”.';
+        }
+
+        map.on('click', e => { if (drawing) addPoint(e.latlng.lat, e.latlng.lng); });
+
+        $('rp-draw').addEventListener('click', () => setDrawing(!drawing));
+        $('rp-undo').addEventListener('click', () => {
+            if (!points.length) return;
+            points.pop();
+            update();
+            $('rp-hint').textContent = points.length ? 'Last segment deleted.' : 'Route deleted.';
+        });
+        $('rp-clear').addEventListener('click', () => {
+            points.length = 0;
+            update();
+            setDrawing(false);
+            $('rp-hint').textContent = 'Whole route deleted. Press “Start route” to draw a new one.';
+        });
+        ['rp-cond-sep', 'rp-cond-dust'].forEach(id => $(id).addEventListener('change', update));
+        $('rp-eva').addEventListener('input', () => { $('rp-eva-val').textContent = $('rp-eva').value + ' h'; update(); });
+
+        /* -----------------------------------------------------
+           SAFETY CHECK
+           ----------------------------------------------------- */
+        function checkSegment(a, b) {
+            const km = distKm(a.lat, a.lon, b.lat, b.lon);
+            const steps = Math.max(2, Math.ceil(km / 0.05));        // one sample every 50 m
+            const inside = new Map(), near = new Map();
+            for (let i = 0; i <= steps; i++) {
+                const t = i / steps, lat = a.lat + (b.lat - a.lat) * t, lon = a.lon + (b.lon - a.lon) * t;
+                ZONES.forEach(z => {
+                    const d = zoneDistance(z, lat, lon);
+                    if (d === 0) inside.set(z.name, z);
+                    else if (z.level === 'High' && d < 0.3) near.set(z.name, z);
+                });
+            }
+            inside.forEach((z, k) => near.delete(k));
+            let status = 'ok';
+            if ([...inside.values()].some(z => z.level === 'High')) status = 'unsafe';
+            else if (inside.size || near.size) status = 'caution';
+            return { km, inside: [...inside.values()], near: [...near.values()], status };
+        }
+
+        function analyse() {
+            const segs = [];
+            for (let i = 1; i < points.length; i++) segs.push(checkSegment(points[i - 1], points[i]));
+            const totalKm = segs.reduce((s, x) => s + x.km, 0);
+            const stops = Math.max(0, points.length - 2);
+            const hours = totalKm / WALK_KMH + stops * STOP_MIN / 60;
+            const doseMsv = hours * RAD_MSV_PER_DAY / 24;
+            const evaLimit = Number($('rp-eva').value);
+            const sep = $('rp-cond-sep').checked, dust = $('rp-cond-dust').checked;
+
+            const checks = [];
+            const zonesHit = new Map(), zonesNear = new Map();
+            segs.forEach(s => { s.inside.forEach(z => zonesHit.set(z.name, z)); s.near.forEach(z => zonesNear.set(z.name, z)); });
+
+            // Topography & relief
+            const steep = [...zonesHit.values()].filter(z => /Steep/.test(z.kind) || /15°/.test(z.kind));
+            if (steep.length) checks.push({ level: 'high', title: 'Topography & relief: UNSAFE',
+                text: 'The route enters ' + steep.map(z => z.name).join(', ') + '. ' + steep[0].text });
+            else if ([...zonesNear.values()].length) checks.push({ level: 'medium', title: 'Topography & relief: caution',
+                text: 'The route passes within 300 m of ' + [...zonesNear.keys()].join(', ') + '. Keep a safe distance from steep ground.' });
+            else checks.push({ level: 'ok', title: 'Topography & relief: OK',
+                text: 'No mapped steep-slope zone on the route. Small cliffs or boulders may still exist – confirm with HiRISE images.' });
+
+            // Surface / terrain type
+            const terrain = [...zonesHit.values()].filter(z => !steep.includes(z));
+            if (terrain.length) terrain.forEach(z => checks.push({ level: z.level === 'High' ? 'high' : 'medium',
+                title: 'Terrain: ' + z.kind + ' – ' + z.name + (z.demo ? ' (demo)' : ''), text: z.text }));
+            else checks.push({ level: 'ok', title: 'Terrain: OK', text: 'No mapped soft sand, boulder fields or sharp-rock areas on the route.' });
+
+            // Radiation
+            if (sep) checks.push({ level: 'high', title: 'Radiation: UNSAFE – solar storm alert',
+                text: 'During a solar particle event the crew must stay in a shielded shelter. No EVA until the alert ends.' });
+            else checks.push({ level: 'ok', title: 'Radiation: OK',
+                text: 'Estimated dose for this EVA: ' + doseMsv.toFixed(3) + ' mSv (from Curiosity\'s average of 0.67 mSv per day at Gale). A chest X-ray is about 0.02 mSv.' });
+
+            // Chemicals
+            checks.push({ level: 'info', title: 'Chemicals: perchlorates in the soil',
+                text: 'Curiosity found perchlorate salts in Gale soil. They are toxic if inhaled or swallowed: clean suits and tools before entering the habitat.' });
+
+            // Weather
+            if (dust) checks.push({ level: 'medium', title: 'Weather: dust storm',
+                text: 'Low visibility and dust on visors and solar panels. Shorten the EVA and stay close to base.' });
+
+            // Endurance
+            if (hours > evaLimit) checks.push({ level: 'high', title: 'Endurance: UNSAFE',
+                text: 'Estimated time ' + fmtTime(hours) + ' is over the ' + evaLimit + ' h EVA limit. Split the route or use a rover.' });
+            else if (hours > evaLimit * 0.75) checks.push({ level: 'medium', title: 'Endurance: caution',
+                text: 'Estimated time ' + fmtTime(hours) + ' uses most of the ' + evaLimit + ' h EVA limit. Little margin for problems.' });
+            else checks.push({ level: 'ok', title: 'Endurance: OK',
+                text: 'Estimated time ' + fmtTime(hours) + ' of ' + evaLimit + ' h available.' });
+
+            let verdict = 'safe';
+            if (checks.some(c => c.level === 'high')) verdict = 'unsafe';
+            else if (checks.some(c => c.level === 'medium')) verdict = 'caution';
+            return { segs, totalKm, hours, doseMsv, checks, verdict, stops };
+        }
+
+        /* -----------------------------------------------------
+           RENDER
+           ----------------------------------------------------- */
+        const SEG_COLORS = { ok: '#64d69a', caution: '#ffb020', unsafe: '#ff4d4d' };
+
+        function update() {
+            routeLayer.clearLayers();
+            $('rp-undo').disabled = !points.length;
+            $('rp-clear').disabled = !points.length;
+            setDrawButton();
+
+            const a = points.length ? analyse() : null;
+            renderPoints(a);
+            if (!points.length) { renderEmpty(); return; }
+
+            a.segs.forEach((s, i) => {
+                const p0 = points[i], p1 = points[i + 1];
+                L.polyline([[p0.lat, p0.lon], [p1.lat, p1.lon]], { color: '#000', weight: 8, opacity: 0.45 }).addTo(routeLayer);
+                L.polyline([[p0.lat, p0.lon], [p1.lat, p1.lon]], { color: SEG_COLORS[s.status], weight: 4, dashArray: '10 6' })
+                    .bindTooltip('Segment ' + (i + 1) + ' · ' + fmtKm(s.km)).addTo(routeLayer);
+            });
+            points.forEach((p, i) => {
+                L.marker([p.lat, p.lon], { icon: L.divIcon({
+                    className: 'rp-pin ' + (i === 0 ? 'rp-pin-start' : (i === points.length - 1 ? 'rp-pin-end' : 'rp-pin-stop')), html: i === 0 ? 'S' : String(i), iconSize: [26, 26] }) })
+                    .addTo(routeLayer);
+            });
+
+            if (points.length < 2) { renderEmpty('Starting point set. Add at least one more stop.'); return; }
+            renderSummary(a);
+            share(a);
+        }
+
+        function renderPoints(a) {
+            $('rp-points-count').textContent = points.length;
+            const totalEl = $('rp-points-total');
+            if (!points.length) {
+                totalEl.innerHTML = '';
+                $('rp-points').innerHTML =
+                    '<li class="rp-empty"><span class="rp-empty-icon">' +
+                    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></span>' +
+                    '<strong>No points yet</strong><small>Press <em>Start route</em> and click on the map. Clicking a site uses its name.</small></li>';
+                return;
+            }
+            totalEl.innerHTML = a && a.segs.length
+                ? '<span>' + fmtKm(a.totalKm) + '</span><span>·</span><span>' + fmtTime(a.hours) + '</span><span>·</span><span>' + a.segs.length + ' segment' + (a.segs.length > 1 ? 's' : '') + '</span>'
+                : '<span>Starting point only</span>';
+
+            const last = points.length - 1;
+            $('rp-points').innerHTML = points.map((p, i) => {
+                const role = i === 0 ? 'start' : (i === last && last > 0 ? 'end' : 'stop');
+                const tag = i === 0 ? 'START' : (i === last ? 'FINAL STOP' : 'STOP ' + i);
+                const seg = a && i > 0 ? a.segs[i - 1] : null;
+                const connector = seg
+                    ? '<div class="rp-connector ' + seg.status + '"><span>' + fmtKm(seg.km) + '</span></div>'
+                    : '';
+                return connector +
+                    '<li class="rp-point ' + role + '">' +
+                    '<span class="rp-dot ' + role + '">' + (i === 0 ? 'S' : i) + '</span>' +
+                    '<div class="rp-point-body">' +
+                    '<span class="rp-point-tag">' + tag + '</span>' +
+                    '<strong>' + escapeHtml(p.name || 'Custom point') + '</strong>' +
+                    '<small>' + fmtCoords(p.lat, p.lon) + '</small>' +
+                    '</div>' +
+                    '<button type="button" class="rp-point-go" data-i="' + i + '" title="Show on map">' +
+                    '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>' +
+                    '</li>';
+            }).join('');
+            $('rp-points').querySelectorAll('.rp-point-go').forEach(btn => btn.addEventListener('click', () => {
+                const p = points[Number(btn.dataset.i)];
+                map.flyTo([p.lat, p.lon], Math.max(map.getZoom(), 12), { duration: 0.8 });
+            }));
+        }
+
+        function renderEmpty(msg) {
+            $('rp-title').textContent = 'No route yet';
+            $('rp-verdict').textContent = 'NO ROUTE';
+            $('rp-verdict').className = 'rp-badge';
+            $('rp-summary').innerHTML = '<p class="info-desc">' + (msg || 'Draw at least one segment to see the analysis.') + '</p>';
+            $('rp-conditions').innerHTML = '<li class="info-desc">—</li>';
+            $('rp-segments').innerHTML = '<p class="info-desc">—</p>';
+            share(null);
+        }
+
+        function stat(label, value) { return '<div class="rp-stat"><span>' + label + '</span><strong>' + value + '</strong></div>'; }
+
+        function renderSummary(a) {
+            const first = points[0], last = points[points.length - 1];
+            $('rp-title').textContent = (first.name || 'Start') + ' → ' + (last.name || 'Stop ' + (points.length - 1));
+            const v = $('rp-verdict');
+            const labels = { safe: 'SAFE · PRELIMINARY', caution: 'CAUTION', unsafe: 'NOT SAFE' };
+            const cls = { safe: 'low', caution: 'medium', unsafe: 'high' };
+            v.textContent = labels[a.verdict];
+            v.className = 'rp-badge ' + cls[a.verdict];
+
+            const reasons = a.checks.filter(c => c.level === 'high' || c.level === 'medium').map(c => c.title);
+            const message = {
+                safe: ' No problems were found in the mapped hazards and mission conditions. This is a preliminary result – confirm the route with high-resolution images before the EVA.',
+                caution: '⚠ The route is possible but needs care: ' + reasons.join('; ') + '.',
+                unsafe: ' This route is not safe: ' + a.checks.filter(c => c.level === 'high').map(c => c.title).join('; ') + '.'
+            }[a.verdict];
+
+            $('rp-summary').innerHTML =
+                '<div class="rp-stats">' +
+                stat('Start', escapeHtml(first.name || fmtCoords(first.lat, first.lon))) +
+                stat('Final stop', escapeHtml(last.name || fmtCoords(last.lat, last.lon))) +
+                stat('Total distance', fmtKm(a.totalKm)) +
+                stat('Segments', a.segs.length) +
+                stat('Estimated time', fmtTime(a.hours)) +
+                stat('Radiation dose', a.doseMsv.toFixed(3) + ' mSv') +
+                '</div>' +
+                '<p class="rp-verdict-msg ' + a.verdict + '">' + message + '</p>';
+
+            $('rp-conditions').innerHTML = a.checks.map(c =>
+                '<li class="rp-hazard ' + (c.level === 'ok' ? 'ok' : c.level) + '"><strong>' + escapeHtml(c.title) + '</strong><span>' + escapeHtml(c.text) + '</span></li>').join('');
+
+            $('rp-segments').innerHTML = '<table class="rp-seg-table"><tr><th>#</th><th>From → To</th><th>Distance</th><th>Status</th></tr>' +
+                a.segs.map((s, i) => {
+                    const p0 = points[i], p1 = points[i + 1];
+                    const label = { ok: 'OK', caution: 'Caution', unsafe: 'Not safe' }[s.status];
+                    const why = s.inside.map(z => z.name).concat(s.near.map(z => 'near ' + z.name)).join(', ');
+                    return '<tr><td>' + (i + 1) + '</td><td>' + escapeHtml((p0.name || (i === 0 ? 'Start' : 'Stop ' + i)) + ' → ' + (p1.name || 'Stop ' + (i + 1))) +
+                        (why ? '<small>' + escapeHtml(why) + '</small>' : '') + '</td><td>' + fmtKm(s.km) + '</td>' +
+                        '<td><span class="rp-seg-status ' + s.status + '">' + label + '</span></td></tr>';
+                }).join('') + '</table>';
+        }
+
+        // Make the planned route available to other sections (e.g. Mission Status)
+        function share(a) {
+            if (!window.marsPath || !window.marsPath.state) return;
+            window.marsPath.state.plannedRoute = a ? {
+                points: points.map(p => ({ lat: p.lat, lon: p.lon, name: p.name })),
+                distanceKm: a.totalKm, hours: a.hours, doseMsv: a.doseMsv, verdict: a.verdict, verified: false,
+                segments: a.segs.length,
+                reasons: a.checks.filter(c => c.level === 'high' || c.level === 'medium').map(c => c.title)
+            } : null;
+            window.marsPath.state.conditions = {
+                sep: $('rp-cond-sep').checked,
+                dust: $('rp-cond-dust').checked,
+                evaLimitH: Number($('rp-eva').value)
+            };
+            document.dispatchEvent(new CustomEvent('marspath:update', { detail: window.marsPath.state }));
+        }
+
+        update();
+    })();
+    </script>
+
+</body>
+</html>
