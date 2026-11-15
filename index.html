@@ -266,6 +266,24 @@
                    
                     <aside class="rp-panel">
                         <div class="panel-block">
+                            <p class="card-label">ADD POINT BY COORDINATES</p>
+                            <form id="rp-coord-form" class="rp-coord-form" autocomplete="off">
+                                <label class="rp-coord-row">
+                                    <span>Latitude</span>
+                                    <input id="rp-lat" type="number" step="any" min="0" max="90" placeholder="4.5895" required>
+                                    <select id="rp-lat-dir"><option value="S" selected>S</option><option value="N">N</option></select>
+                                </label>
+                                <label class="rp-coord-row">
+                                    <span>Longitude</span>
+                                    <input id="rp-lon" type="number" step="any" min="0" max="360" placeholder="137.4417" required>
+                                    <select id="rp-lon-dir"><option value="E" selected>E</option><option value="W">W</option></select>
+                                </label>
+                                <button type="submit" class="rp-coord-btn">Add point</button>
+                                <p id="rp-coord-msg" class="rp-coord-msg">Allowed area: 3.9°–6.9° S, 136.3°–139.3° E</p>
+                            </form>
+                        </div>
+
+                        <div class="panel-block">
                             <div class="rp-points-head">
                                 <p class="card-label">ROUTE POINTS</p>
                                 <span id="rp-points-count" class="rp-count">0</span>
@@ -1564,6 +1582,33 @@
         }
 
         map.on('click', e => { if (drawing) addPoint(e.latlng.lat, e.latlng.lng); });
+
+        // Add a point by typing its coordinates
+        $('rp-coord-form').addEventListener('submit', e => {
+            e.preventDefault();
+            const msg = $('rp-coord-msg');
+            const latAbs = parseFloat($('rp-lat').value), lonAbs = parseFloat($('rp-lon').value);
+            if (isNaN(latAbs) || isNaN(lonAbs)) {
+                msg.className = 'rp-coord-msg error';
+                msg.textContent = 'Type a latitude and a longitude.';
+                return;
+            }
+            const lat = $('rp-lat-dir').value === 'S' ? -latAbs : latAbs;
+            const lon = $('rp-lon-dir').value === 'W' ? -lonAbs : lonAbs;
+            if (lon < EXTENT[0] || lon > EXTENT[2] || lat < EXTENT[1] || lat > EXTENT[3]) {
+                msg.className = 'rp-coord-msg error';
+                msg.textContent = 'Outside the mapped area. Use 3.9°–6.9° S and 136.3°–139.3° E.';
+                return;
+            }
+            addPoint(lat, lon);
+            map.panTo([lat, lon]);
+            $('rp-hint').textContent = 'Point added by coordinates. Type the next one or click the map.';
+            msg.className = 'rp-coord-msg ok';
+            msg.textContent = (points.length === 1 ? 'Starting point added: ' : 'Point ' + points.length + ' added: ') + fmtCoords(lat, lon);
+            $('rp-lat').value = '';
+            $('rp-lon').value = '';
+            $('rp-lat').focus();
+        });
 
         $('rp-draw').addEventListener('click', () => setDrawing(!drawing));
         $('rp-undo').addEventListener('click', () => {
