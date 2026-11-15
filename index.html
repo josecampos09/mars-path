@@ -268,16 +268,9 @@
                         <div class="panel-block">
                             <p class="card-label">ADD POINT BY COORDINATES</p>
                             <form id="rp-coord-form" class="rp-coord-form" autocomplete="off">
-                                <label class="rp-coord-row">
-                                    <span>Latitude</span>
-                                    <input id="rp-lat" type="number" step="any" min="0" max="90" placeholder="4.5895" required>
-                                    <select id="rp-lat-dir"><option value="S" selected>S</option><option value="N">N</option></select>
-                                </label>
-                                <label class="rp-coord-row">
-                                    <span>Longitude</span>
-                                    <input id="rp-lon" type="number" step="any" min="0" max="360" placeholder="137.4417" required>
-                                    <select id="rp-lon-dir"><option value="E" selected>E</option><option value="W">W</option></select>
-                                </label>
+                                <div class="search-box">
+                                    <input id="rp-coord-input" type="text" placeholder="Type lat, lon  (e.g. 4.5895 S, 137.4417 E)">
+                                </div>
                                 <button type="submit" class="rp-coord-btn">Add point</button>
                                 <p id="rp-coord-msg" class="rp-coord-msg">Allowed area: 3.9°–6.9° S, 136.3°–139.3° E</p>
                             </form>
@@ -1587,14 +1580,21 @@
         $('rp-coord-form').addEventListener('submit', e => {
             e.preventDefault();
             const msg = $('rp-coord-msg');
-            const latAbs = parseFloat($('rp-lat').value), lonAbs = parseFloat($('rp-lon').value);
-            if (isNaN(latAbs) || isNaN(lonAbs)) {
+            // Accepts "4.5895 S, 137.4417 E", "-4.5895, 137.4417" or "4.5895, 137.4417"
+            const parts = [...$('rp-coord-input').value.replace(/°/g, ' ')
+                .matchAll(/(-?\d+(?:\.\d+)?)\s*([NSEWnsew])?/g)];
+            if (parts.length < 2) {
                 msg.className = 'rp-coord-msg error';
-                msg.textContent = 'Type a latitude and a longitude.';
+                msg.textContent = 'Type a latitude and a longitude, e.g. 4.5895 S, 137.4417 E';
                 return;
             }
-            const lat = $('rp-lat-dir').value === 'S' ? -latAbs : latAbs;
-            const lon = $('rp-lon-dir').value === 'W' ? -lonAbs : lonAbs;
+            let lat = parseFloat(parts[0][1]), lon = parseFloat(parts[1][1]);
+            const latDir = (parts[0][2] || '').toUpperCase(), lonDir = (parts[1][2] || '').toUpperCase();
+            if (latDir === 'S') lat = -Math.abs(lat);
+            else if (latDir === 'N') lat = Math.abs(lat);
+            else if (lat > 0) lat = -lat;          // no N/S given: the whole region is south of the equator
+            if (lonDir === 'W') lon = -Math.abs(lon);
+            else if (lonDir === 'E') lon = Math.abs(lon);
             if (lon < EXTENT[0] || lon > EXTENT[2] || lat < EXTENT[1] || lat > EXTENT[3]) {
                 msg.className = 'rp-coord-msg error';
                 msg.textContent = 'Outside the mapped area. Use 3.9°–6.9° S and 136.3°–139.3° E.';
@@ -1605,9 +1605,8 @@
             $('rp-hint').textContent = 'Point added by coordinates. Type the next one or click the map.';
             msg.className = 'rp-coord-msg ok';
             msg.textContent = (points.length === 1 ? 'Starting point added: ' : 'Point ' + points.length + ' added: ') + fmtCoords(lat, lon);
-            $('rp-lat').value = '';
-            $('rp-lon').value = '';
-            $('rp-lat').focus();
+            $('rp-coord-input').value = '';
+            $('rp-coord-input').focus();
         });
 
         $('rp-draw').addEventListener('click', () => setDrawing(!drawing));
